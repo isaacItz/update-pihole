@@ -38,6 +38,7 @@ def update_ips_file(file_path, domain, new_ip):
 
     # for test purposes we won't change the original file
     with open(f"{file_path}.test", 'w') as file:
+    #with open(file_path, 'w') as file:
       for line in updated_lines:
         file.write(line)
 
