@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 
+import time
 import socket
+
+local_db = {}
 
 def get_local_ip():
   try:
@@ -12,6 +15,9 @@ def get_local_ip():
 
     # Get the local IP address associated with this socket
     local_ip = s.getsockname()[0]
+  except OSError as e:
+    print(f"Network may be unavailable {e}")
+    return None;
   finally:
     # Close the socket
     s.close()
@@ -44,10 +50,39 @@ def update_ips_file(file_path, domain, new_ip):
 
   return updated_lines
 
+def check_changes(ip, domain):
+  global local_db
+  return local_db[domain] != ip:
+
+  with open(file, 'r') as file:
+    lines = file.readlines()
+
+  for line in lines:
+    if domain in line:
+      return True;
+  return True;
+
+
+
 if __name__ == "__main__":
-  ip = get_local_ip()
-  print(f"Local IP Address: {ip}")
-  domain = 'ivl.pro'
-  file = './99-openshift.conf'
-  newips = update_ips_file(file, domain, ip)
-  print(newips)
+  while True:
+    ip = get_local_ip()
+    domain = 'ivl.pro'
+    file = './99-openshift.conf'
+
+    print(f"Local IP Address: {ip}")
+    #we won't do anything if Network is Unreachable
+    if ip == None:
+      pass
+
+    if domain in local_db:
+      if check_changes(ip, domain):
+        print('actualizamos la db ')
+        newips = update_ips_file(file, domain, ip)
+        local_db[domain] = ip
+    else:
+      print('guardamos por que no existe el dominio en la bd')
+      newips = update_ips_file(file, domain, ip)
+      local_db[domain] = ip
+
+    time.sleep(5)
