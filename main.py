@@ -34,6 +34,14 @@ class IPConfigUpdater:
 
     return updated_lines
 
+  def backup_file(self):
+    with open(self.file_path, 'r') as file:
+      lines = file.readlines()
+
+    with open(f'{self.file_path}.backup', 'w') as file:
+        file.writelines(lines)
+
+
   def has_domain(self, domain):
     return domain in self.local_db
 

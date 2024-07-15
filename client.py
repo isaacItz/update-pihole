@@ -5,8 +5,18 @@ import json
 import os
 import time
 import socket
+from typing import Optional
 
-def get_local_ip():
+def get_DNS_IP(host: str) -> Optional[str]:
+  try:
+    ip = socket.gethostbyname(host)
+    return ip
+  except socket.gaierror as e:
+    print(f'Error al resolver DNS: {e}')
+    return None
+
+
+def get_local_ip() -> Optional[str]:
   try:
     # Create a socket object
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -39,6 +49,7 @@ if __name__ == "__main__":
       protocol = os.getenv('PROTO', 'http')
       url = f'{protocol}://{host}:{port}/ip'
       print(url)
+      print(f'DNS: {get_DNS_IP(host)}')
       data = {
         "ip": ip,
         "domain": domain

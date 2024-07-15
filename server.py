@@ -5,6 +5,7 @@ import os
 file_name = os.getenv('FILE_PATH', '99-openshift.conf.test')
 
 ip_manager = IPConfigUpdater(file_name)
+ip_manager.backup_file()
 
 app = Flask(__name__)
 
