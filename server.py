@@ -16,14 +16,30 @@ def receive_ip():
     ip_address = data.get('ip')
     domain = data.get('domain')
 
-    if not ip_address:
-        return jsonify({"error": "No IP address provided"}), 400
+    valid = validate(data)
+    if not valid[0]:
+        return valid[1:]
 
     if not ip_manager.has_domain(domain) or ip_manager.has_ip_changed(ip_address, domain):
         ip_manager.update_ips_file(domain, ip_address)
 
     response = {"message": "OK"}
     return jsonify(response)
+
+def validate(data):
+    valid = True
+    err = {"error": ""}
+    code = 200
+    if not data.get('ip'):
+        err["error"] = "No IP address provided"
+        code = 400
+        valid = False
+    if not data.get('domain'):
+        err["error"] = "No Domain provided"
+        code = 400
+        valid = False
+
+    return valid, err, code
 
 if __name__ == '__main__':
     app.run()
